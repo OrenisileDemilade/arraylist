@@ -1,0 +1,167 @@
+/*
+*
+* [CoffeeShop]
+*
+* COMP 1020 SECTION [A02]
+* INSTRUCTOR: [Lauren Himbeault ]
+* NAME: [Demilade Orenisile]
+* ASSIGNMENT: [Assignment #02]
+* QUESTION: [question #]
+*
+* PURPOSE: [To create a game that reads data from a text file and sends data to another text file]
+*/
+
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.Scanner;
+
+public class TheGame {
+
+    public static void main(String[] args) {
+        boolean encrpyt = true;
+        boolean passed4 = false;
+        String name;
+        String word;
+        String decrypted = "";
+        Action[] actions = new Action[6];
+        int[] completedActions;
+
+        // Initialize an array of Action objects, representing different game actions.
+        actions[0] = new Action(1, "See all Maps");
+        actions[1] = new Action(2, "Open map");
+        actions[2] = new Action(3, "Decrypt map");
+        actions[3] = new Action(4, "Write down secret");
+        actions[4] = new Action(5, "Send information to Captain Lila");
+        actions[5] = new Action(0, "Exit");
+
+        Map[] mapList;
+        Map map = new Map("", 0, "");
+
+        // Display a welcome message and the available game actions.
+        System.out.println("Welcome to the Secret of the Island! Choose an option to start the game.");
+        displayAction(actions);
+
+        Scanner scnr = new Scanner(System.in);
+        int option = getUserOption(scnr);
+
+        
+
+        if (option == 1) {
+            // Read maps from a file and store them in the mapList array.
+            mapList = map.readFile("folio.txt");
+            displayAction(actions);
+            option = getUserOption(scnr);
+
+            if (option == 2) {
+                // Ask the user for the map name they want to open.
+                System.out.println("Which map do you want to open ?");
+                System.out.print("Map name: ");
+                name = scnr.next();
+
+                // Find the map with the specified name from the mapList using Java streams.
+                Optional<Map> singleMap = Arrays.stream(mapList)
+                        .filter(data -> data.name.equals(name))
+                        .findFirst();
+
+                if (singleMap.isPresent()) {
+                    // If the map is found, read and display its content.
+                    singleMap.get().readMap();
+                    displayAction(actions);
+                    option = getUserOption(scnr);
+                }
+
+                if (option == 3) {
+                    // Decrypt and display the content of the selected map.
+                    decrypted = singleMap.get().decrypted();
+                    encrpyt = true;
+                    displayAction(actions);
+                    option = getUserOption(scnr);
+                }
+
+                if (option == 4) {
+                    if (!encrpyt && option == 4) {
+                        boolean correctSecret = false;
+                        word = ""; // Initialize word to an empty string (if not already done)
+
+                        // Ask the user to input a secret.
+                        Scanner newScanner = new Scanner(System.in);
+                        System.out.println("Please type in the secret");
+                        System.out.print("Secret: ");
+                        word = newScanner.nextLine();
+                        System.out.println(word);
+
+                        // Check if the input secret matches the content of the selected map.
+                        if (word.equals(decrypted.trim())) {
+                            System.out.println("You are correct");
+                            passed4 = true;
+                            correctSecret = true; // Set to true to exit the loop
+                        } else {
+                            System.out.println("Secret doesn't match the decrypted map content.");
+                            System.out.println("Decrypt the map or ");
+                            System.out.print("Try again: ");
+                        }
+                        // newScanner.close();
+
+                        option = getUserOption(scnr);
+                    } else {
+                        System.out.println("the map has not been decrpted please decrypt the map first");
+                    }
+                }
+
+                if (option == 5) {
+                    if (option == 5 && passed4) {
+                        map.write("secret.txt", word);
+                        System.out.println("Successfully wrote secret to the file.");
+                        System.out.println(decrypted.trim());
+
+                        if (option == 0) {
+                            System.out.println("Thank you for playing the game");
+                            System.out.println("The game is over");
+                        }
+                    } else {
+                        System.out.println("there's no secret to send to captain Lila ");
+                        option = getUserOption(scnr);
+                    }
+                }
+
+            }
+            if (option == 0) {
+                System.out.println("Thank you for playing the game");
+                System.out.println("The game is over");
+            } else {
+                System.out.println("please input the right option");
+                displayAction(actions);
+                option = getUserOption(scnr);
+            }
+        }
+        if (option == 0) {
+            System.out.println("Thank you for playing the game");
+            System.out.println("The game is over");
+        } else {
+            System.out.println("Please follow the rules and input the right option");
+            displayAction(actions);
+            option = getUserOption(scnr);
+        }
+
+        // Close the scanner
+        scnr.close();
+    }
+
+    // Method to get the user's input option.
+    public static int getUserOption(Scanner scanner) {
+        System.out.print("Option: ");
+        int option = scanner.nextInt();
+        return option;
+    }
+
+    // Method to display available game actions.
+    public static void displayAction(Action[] actions) {
+        for (Action action : actions) {
+            System.out.println(action.id + " - " + action.title);
+        }
+    }
+
+    public static void handleActions(action) {
+        
+    }
+}
